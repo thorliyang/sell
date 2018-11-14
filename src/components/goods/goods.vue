@@ -29,13 +29,16 @@
                                     <span :class="$style['now']">￥{{food.price}}</span>
                                     <span :class="$style['old']" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                                 </div>
+                                <div :class="$style['cartcontrol-wrapper']">
+                                    <cartcontrol :food="food" @cartAdd="cartAdd($event)"/>
+                                </div>
                             </div>
                         </li>
                     </ul>
                 </li>
             </ul>
         </div>
-        <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"/>
+        <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"/>
     </div>
 </template>
 
@@ -43,12 +46,13 @@
 import icon from '../reuse/icon/icon'
 import BScroll from 'better-scroll'
 import shopcart from '../showcart/showcart'
+import cartcontrol from '../reuse/cartcontrol/cartcontrol'
 
 const ERR_OK = 0
 
 export default {
     components:{
-        icon, shopcart
+        icon, shopcart, cartcontrol
     },
     props: {
         seller: {
@@ -68,7 +72,7 @@ export default {
         }
     },
     created () {
-        this.$http('/goods').then(response => { 
+        this.$http('/goods').then(response => {
             response = response.data
             if (response.errno === ERR_OK) {
                 this.goods = response.data
@@ -91,13 +95,22 @@ export default {
                 }
             }
             return 0
+        },
+        selectFoods () {
+            let foods = []
+            this.goods.forEach(good => {
+                good.foods.forEach(food => {
+                    if (food.count) {
+                        foods.push(food)
+                    }
+                })
+            })
+            return foods
         }
     },
     methods: {
         selectMenu (e, index) {
-            if (!e._constructed) {
-                return;
-            }
+            if (!e._constructed) return
             let foodList = this.$refs['foods-wrapper'].querySelectorAll('.' + this.$style['food-list'])
             let el = foodList[index]
             this.foodsScroll.scrollToElement(el, 300)
@@ -107,6 +120,7 @@ export default {
                 click: true
             })
             this.foodsScroll = new BScroll(this.$refs['foods-wrapper'], {
+                click: true,
                 probeType: 3
             })
             this.foodsScroll.on('scroll', pos => {
@@ -115,7 +129,7 @@ export default {
                 this.scrollY = Math.abs(Math.round(pos.y))
                 // 右侧根据左侧滚动
                 // console.log(this.goodsHeight)
-               
+
             })
         },
         _calculateHeight () {
@@ -132,6 +146,9 @@ export default {
                 this.listHeight.menu.push(mH)
             })
         },
+        cartAdd(el) {
+            this.$refs.shopcart.drop(el)
+        }
     }
 }
 </script>
@@ -243,10 +260,15 @@ export default {
                             color: rgb(147, 153, 159);
                         }
                     }
+                    .cartcontrol-wrapper {
+                        position: absolute;
+                        right: 0;
+                        bottom: 12px;
+                    }
                 }
             }
         }
-        
+
     }
 }
 </style>

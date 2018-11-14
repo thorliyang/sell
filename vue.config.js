@@ -12,7 +12,7 @@ var apiRoutes = express.Router();
 app.use('/api', apiRoutes);
 
 module.exports = {
-    baseUrl: '/',
+    baseUrl: './',
 
     // 输出文件目录
     outputDir: 'dist',

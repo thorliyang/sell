@@ -8,15 +8,29 @@
                 </div>
                 <div :class="$style['num']" v-if="totalCount>0">{{totalCount}}</div>
             </div>
-            <div :class="[$style['price'], classCount]">￥ {{totalPrice}}</div>
+            <div :class="[$style['price'], classCount]">￥{{totalPrice}}</div>
             <div :class="$style['desc']">另需配送费￥{{deliveryPrice}}元</div>
         </div>
         <div :class="$style['content-right']">
-            <div :class="$style['pay']">
-                ￥{{minPrice}}元起送
-            </div>
+            <div :class="[$style['pay'], classDesc]">{{payDesc}}</div>
         </div>
     </div>
+
+        <div :class="$style['ball-container']">
+            <transition-group
+                name="drop"
+                @before-enter="beforeEnter"
+                @enter="enter"
+                @after-enter="afterEnter"
+            >
+                <div
+                    :class="$style['ball']"
+                    v-for="(ball, index) in balls"
+                    :key="index"
+                    v-show="ball.show"
+                ></div>
+            </transition-group>
+        </div>
 </div>
 </template>
 
@@ -43,7 +57,24 @@ export default {
     },
     data () {
         return {
-            
+            balls: [
+                {
+                    show: false
+                },
+                {
+                    show: false
+                },
+                {
+                    show: false
+                },
+                {
+                    show: false
+                },
+                {
+                    show: false
+                }
+            ],
+            dropBalls: []
         }
     },
     computed: {
@@ -61,9 +92,68 @@ export default {
             })
             return count
         },
+        payDesc () {
+            let str;
+            if (this.totalPrice === 0) {
+                str = `￥${this.minPrice}元起送`
+            } else if (this.totalPrice < this.minPrice) {
+                let diff = this.minPrice - this.totalPrice
+                str = `还差￥${diff}元起送`
+            } else {
+                str = '去结算'
+            }
+            return str
+        },
         classCount () {
-            let clas = this.$style['highlight']
-            return this.totalCount > 0 ? clas : ''
+            let highlight = this.$style['highlight']
+            return this.totalCount > 0 ? highlight : ''
+        },
+        classDesc () {
+            let notEnough = this.$style['not-enough']
+            let enough = this.$style['enough']
+            return this.totalPrice < this.minPrice ? notEnough : enough
+        }
+    },
+    methods: {
+        drop (el) {
+            for (let i = 0, le = this.balls.length; i < le; i ++) {
+                let ball = this.balls[i]
+                if (!ball.show) {
+                    ball.show = true
+                    ball.el = el
+                    this.dropBalls.push(ball)
+                    return
+                }
+            }
+        },
+        beforeEnter (el) {
+            let count = this.balls.length
+            while (count--) {
+                let ball = this.balls[count]
+                if (ball.show) {
+                    let rect = ball.el.getBoundingClientRect()
+                    let x = rect.left - 32
+                    let y = -(window.innerHeight - rect.top - 22)
+                    el.style.display = ''
+                    el.style.transform = `translate3d(${x}px, ${y}px, 0)`
+                }
+            }
+        },
+        enter (el, done) {
+            el.style.transition = 'all 2s'
+
+            let rf = el.offsetHeight
+            console.log(el)
+
+            el.style.transform = 'translate3d(0, 0, 0)'
+            done()
+        },
+        afterEnter (el) {
+            let ball = this.dropBalls.shift()
+            if (ball) {
+                ball.show = false
+                el.style.display = 'none'
+            }
         }
     }
 }
@@ -77,6 +167,7 @@ export default {
     z-index: 50;
     width: 100%;
     height: 48px;
+    color: rgba(255, 255, 255, 0.4);
     .content {
         display: flex;
         background-color: #141d27;
@@ -139,7 +230,6 @@ export default {
                 border-right: 1px solid rgba(255, 255, 255, 0.1);
                 font-size: 16px;
                 font-weight: 700;
-                color: rgba(255, 255, 255, 0.4);
                 &.highlight {
                     color: #fff;
                 }
@@ -151,20 +241,38 @@ export default {
                 margin: 12px 0 0 12px;
                 line-height: 24px;
                 font-size: 10px;
-                color: rgba(255, 255, 255, 0.4);
             }
         }
         .content-right {
             flex: 0 0 105px;
             width: 105px;
-            .pay{
+            .pay {
                 height: 48px;
                 line-height: 48px;
                 text-align: center;
                 font-size: 12px;
-                color: rgba(255, 255, 255, 0.4);
                 font-weight: 700;
+                &.not-enough {
+                    background-color: #2b333b;
+                }
+                &.enough {
+                    background-color: #00b43c;
+                    color: #fff;
+                }
             }
+        }
+    }
+    .ball-container {
+        .ball {
+            position: fixed;
+            left: 32px;
+            bottom: 22px;
+            z-index: 200;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: rgb(0, 160, 220);
+            transition: all .3s
         }
     }
 }
