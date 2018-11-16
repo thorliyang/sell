@@ -289,13 +289,11 @@ export default {
 .fade-enter-active, .fade-leave-active {
     transition: all .3s
 }
-.fade-enter,
-.fade-leave-to  {
+.fade-enter, .fade-leave-to  {
     transform: scale(0);
     opacity: 0;
 }
-.fade-leave, 
-.fade-enter-to {
+.fade-leave, .fade-enter-to {
     transform: scale(1);
     opacity: 1;
 }

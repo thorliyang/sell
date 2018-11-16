@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import axios from 'axios'
+import Velocity from 'velocity-animate'
 import $index from './common/less/index.less'
 import '../static/css/reset.css'
 import App from './App.vue'
@@ -9,6 +10,8 @@ Vue.prototype.$index = $index
 
 axios.defaults.baseURL = '/api'
 Vue.prototype.$http = axios
+
+Vue.prototype.velocity = Velocity
 
 Vue.config.productionTip = false
 

@@ -21,7 +21,7 @@ module.exports = {
     lintOnSave: process.env.NODE_ENV !== 'production',
 
     devServer: {
-        open: process.platform === 'darwin',
+        open: true,
         host: '0.0.0.0',
         port: 8080,
         https: false,

@@ -29,7 +29,7 @@ export default {
         },
         decreaseCart (e) {
             if (!e._constructed) return
-            this.food.count --
+            this.food.count = this.food.count <= 0 ? 0 : this.food.count - 1
         }
     }
 }
