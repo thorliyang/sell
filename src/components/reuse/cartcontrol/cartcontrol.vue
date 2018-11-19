@@ -1,11 +1,11 @@
 <template lang="html">
-<div :class="$style['cartcontrol']">
-    <transition name="move">
-        <div :class="[$style['cart-decrease'], $index['remove_circle_outline']]" v-show="food.count>0" @click="decreaseCart($event)"></div>
-    </transition>
-    <div :class="$style['cart-count']" v-show="food.count>0">{{food.count}}</div>
-    <div :class="[$style['cart-add'], $index['add_circle']]" @click="addCart($event)"></div>
-</div>
+    <div :class="$style['cartcontrol']">
+        <transition name="move">
+            <div :class="[$style['cart-decrease'], $index['remove_circle_outline']]" v-show="food.count>0" @click.stop.prevent="decreaseCart($event)"></div>
+        </transition>
+        <div :class="$style['cart-count']" v-show="food.count>0">{{food.count}}</div>
+        <div :class="[$style['cart-add'], $index['add_circle']]" @click.stop.prevent="addCart($event)"></div>
+    </div>
 </template>
 
 <script>

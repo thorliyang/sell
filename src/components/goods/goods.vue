@@ -14,7 +14,7 @@
                 <li :class="$style['food-list']" v-for="(item, index) in goods" :key="index">
                     <h1 :class="$style['title']">{{item.name}}</h1>
                     <ul>
-                        <li :class="$style['food-item']" v-for="(food, key) in item.foods" :key="key">
+                        <li :class="$style['food-item']" v-for="(food, key) in item.foods" :key="key" @click="selectFood($event, food)">
                             <div :class="$style['icon']">
                                 <img :src="food.icon" width="57" height="57">
                             </div>
@@ -39,20 +39,22 @@
             </ul>
         </div>
         <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"/>
+        <food :food="selectedFood" @cartAdd="cartAdd($event)" ref="food"/>
     </div>
 </template>
 
 <script>
-import icon from '../reuse/icon/icon'
 import BScroll from 'better-scroll'
+import icon from '../reuse/icon/icon'
 import shopcart from '../showcart/showcart'
 import cartcontrol from '../reuse/cartcontrol/cartcontrol'
+import food from '../food/food'
 
 const ERR_OK = 0
 
 export default {
     components:{
-        icon, shopcart, cartcontrol
+        icon, shopcart, cartcontrol, food
     },
     props: {
         seller: {
@@ -69,6 +71,7 @@ export default {
             },
             scrollY: 0,
             goodsHeight: 0,
+            selectedFood: {}
         }
     },
     created () {
@@ -115,6 +118,11 @@ export default {
             let el = foodList[index]
             this.foodsScroll.scrollToElement(el, 300)
         },
+        selectFood(e, food) {
+            if (!e._constructed) return
+            this.selectedFood = food
+            this.$refs.food.show()
+        },
         _initScroll () {
             this.meunScroll = new BScroll(this.$refs['menu-wrapper'], {
                 click: true
@@ -146,9 +154,11 @@ export default {
                 this.listHeight.menu.push(mH)
             })
         },
+        // 接收的自定义事件
         cartAdd(el) {
+            // 引入子组件的方法
             this.$refs.shopcart.drop(el)
-        }
+        },
     }
 }
 </script>
@@ -247,6 +257,7 @@ export default {
                     }
                     .price {
                         font-weight: 700;
+                        height: 24px;
                         line-height: 24px;
                         font-size: 0;
                         .now {

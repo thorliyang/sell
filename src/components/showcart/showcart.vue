@@ -1,65 +1,65 @@
 <template>
-<div class="shopcart">
-    <div :class="$style['shopcart']">
-        <div :class="$style['content']" @click="toggleList">
-            <div :class="$style['content-left']">
-                <div :class="$style['logo-wrapper']">
-                    <div :class="[$style['logo'], classCount]">
-                        <i :class="[$index['shopping_cart'], $style['shopping_cart']]"></i>
-                    </div>
-                    <div :class="$style['num']" v-if="totalCount>0">{{totalCount}}</div>
-                </div>
-                <div :class="[$style['price'], classCount]">￥{{totalPrice}}</div>
-                <div :class="$style['desc']">另需配送费￥{{deliveryPrice}}元</div>
-            </div>
-            <div :class="$style['content-right']">
-                <div :class="[$style['pay'], classDesc]" @click.stop.prevent="pay()">{{payDesc}}</div>
-            </div>
-        </div>
-        <div :class="$style['ball-container']">
-            <transition-group
-                tag="div"
-                name="drop"
-                @before-enter="beforeEnter"
-                @enter="enter"
-                @after-enter="afterEnter"
-            >
-                <div
-                    :class="$style['ball']"
-                    v-for="(ball, index) in balls"
-                    :key="index"
-                    v-show="ball.show"
-                >
-                    <div :class="$style['inner']"></div>
-                </div>
-            </transition-group>
-        </div>
-        <transition name="fold">
-            <div :class="$style['shopcart-list']" v-show="listshow">
-                <div :class="$style['list-header']">
-                    <h1 :class="$style['title']">购物车</h1>
-                    <span :class="$style['empty']" @click="empty">清除</span>
-                </div>
-                <div :class="$style['list-content']" ref="list-content">
-                    <ul>
-                        <li :class="$style['food']" v-for="(food, index) in selectFoods" :key="index">
-                        <span :class="$style['name']">{{food.name}}</span>
-                        <div :class="$style['price']">
-                            <span>￥{{food.price * food.count}}</span>
+    <div class="shopcart">
+        <div :class="$style['shopcart']">
+            <div :class="$style['content']" @click="toggleList">
+                <div :class="$style['content-left']">
+                    <div :class="$style['logo-wrapper']">
+                        <div :class="[$style['logo'], classCount]">
+                            <i :class="[$index['shopping_cart'], $style['shopping_cart']]"></i>
                         </div>
-                            <div :class="$style['cartcontrol-wrapper']">
-                                <cartcontrol :food="food"/>
-                            </div>
-                        </li>
-                    </ul>
+                        <div :class="$style['num']" v-if="totalCount>0">{{totalCount}}</div>
+                    </div>
+                    <div :class="[$style['price'], classCount]">￥{{totalPrice}}</div>
+                    <div :class="$style['desc']">另需配送费￥{{deliveryPrice}}元</div>
+                </div>
+                <div :class="$style['content-right']">
+                    <div :class="[$style['pay'], classDesc]" @click.stop.prevent="pay()">{{payDesc}}</div>
                 </div>
             </div>
+            <div :class="$style['ball-container']">
+                <transition-group
+                    tag="div"
+                    name="drop"
+                    @before-enter="beforeEnter"
+                    @enter="enter"
+                    @after-enter="afterEnter"
+                >
+                    <div
+                        :class="$style['ball']"
+                        v-for="(ball, index) in balls"
+                        :key="index"
+                        v-show="ball.show"
+                    >
+                        <div :class="$style['inner']"></div>
+                    </div>
+                </transition-group>
+            </div>
+            <transition name="fold">
+                <div :class="$style['shopcart-list']" v-show="listshow">
+                    <div :class="$style['list-header']">
+                        <h1 :class="$style['title']">购物车</h1>
+                        <span :class="$style['empty']" @click="empty">清除</span>
+                    </div>
+                    <div :class="$style['list-content']" ref="list-content">
+                        <ul>
+                            <li :class="$style['food']" v-for="(food, index) in selectFoods" :key="index">
+                            <span :class="$style['name']">{{food.name}}</span>
+                            <div :class="$style['price']">
+                                <span>￥{{food.price * food.count}}</span>
+                            </div>
+                                <div :class="$style['cartcontrol-wrapper']">
+                                    <cartcontrol :food="food"/>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </transition>
+        </div>
+        <transition name="fade">
+            <div :class="$style['list-mark']" v-show="listshow" @click="hideList"></div>
         </transition>
     </div>
-    <transition name="fade">
-        <div :class="$style['list-mark']" v-show="listshow" @click="hideList"></div>
-    </transition>
-</div>
 </template>
 
 <script>
@@ -166,7 +166,6 @@ export default {
         classDesc () {
             let notEnough = this.$style['not-enough']
             let enough = this.$style['enough']
-            console.log(this.totalPrice, this.minPrice)
             return (!this.minPrice || (this.totalPrice < this.minPrice)) ? notEnough : enough
         }
     },

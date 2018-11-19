@@ -18,7 +18,7 @@ module.exports = {
     outputDir: 'dist',
 
     //如果你想要在生产构建时禁用 eslint-loader，你可以用如下配置
-    lintOnSave: process.env.NODE_ENV !== 'production',
+    // lintOnSave: process.env.NODE_ENV !== 'production',
 
     devServer: {
         open: true,
