@@ -20,13 +20,13 @@
         <!-- count -->
         <div :class="$style['support-count']" v-if="seller.supports" @click="showDetail">
             <span :class="$style['count']">{{seller.supports.length}}个</span>
-            <i :class="[$index['keyboard_arrow_right'], $style['keyboard_arrow_right']]"></i>
+            <i class="icon_keyboard_arrow_right" :class="$style['keyboard_arrow_right']"></i>
         </div>
     </div>
     <!-- 公告 -->
     <div :class="$style['bulletin-wrapper']" @click="showDetail">
         <span :class="$style['bulletin-title']"></span><span :class="$style['bulletin-text']">{{seller.bulletin}}</span>
-        <i :class="[$index['keyboard_arrow_right'], $style['keyboard_arrow_right']]"></i>
+        <i class="icon_keyboard_arrow_right" :class="$style['keyboard_arrow_right']"></i>
     </div>
     <!-- shadow -->
     <div :class="$style['background']">
@@ -36,11 +36,11 @@
     <transition name="fade">
         <div :class="$style['detail']" v-show="detailShow">
             <div :class="$style['detail-background']"></div>
-            <div :class="[$style['detail-wrapper'], $index['clearfix']]" class="clearfix">
+            <div class="icon_clearfix" :class="$style['detail-wrapper']">
                 <div :class="$style['detail-main']">
                     <h1 :class="$style['name']">{{seller.name}}</h1>
                     <div :class="$style['star-wrapper']">
-                        <v-star :size="48" :score="seller.score"></v-star>
+                        <star :size="48" :score="seller.score"></star>
                     </div>
                     <div :class="$style['title-wrapper']">
                         <v-title :text="titleText[0]"></v-title>
@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div :class="$style['detail-close']" @click="hideDetail">
-                <i :class="$index['close']"></i>
+                <i class="icon_close"></i>
             </div>
         </div>
     </transition>
@@ -68,20 +68,15 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import star from '../reuse/star/star'
 import title from '../reuse/title/title'
 import icon from '../reuse/icon/icon'
 
 export default {
     components: {
-        'v-star': star, 
         'v-title': title,
-        icon
-    },
-    props: {
-        seller: {
-            type: Object
-        }
+        star, icon
     },
     data () {
         return {
@@ -89,6 +84,11 @@ export default {
             detailShow: false,
             titleText: ['优惠信息', '商家公告']
         }
+    },
+    computed: {
+        ...mapState({
+            seller: state => state.seller
+        })
     },
     methods: {
         showDetail () {

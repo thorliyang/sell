@@ -5,7 +5,7 @@
                 <div :class="$style['image-header']">
                     <img :src="food.image" />
                     <div :class="$style['back']" @click="hide">
-                        <i :class="[$index['arrow_lift'], $style['arrow_lift']]"></i>
+                        <i class="icon_arrow_lift" :class="$style['arrow_lift']"></i>
                     </div>
                 </div>
                 <div :class="$style['content']">
@@ -52,7 +52,7 @@
                                     <span :class="$style['name']">{{rating.username}}</span>
                                     <img :class="$style['avatar']" width="12" height="12" :src="rating.avatar" />
                                 </div>
-                                <div :class="$style['time']">{{rating.rateTime}}</div>
+                                <div :class="$style['time']">{{formatDate(rating.rateTime)}}</div>
                                 <p :class="$style['text']">
                                     <span :class="thumbClass(rating.rateType)"></span>{{rating.text}}
                                 </p>
@@ -72,7 +72,7 @@ import BScroll from 'better-scroll'
 import cartcontrol from '../reuse/cartcontrol/cartcontrol'
 import split from '../reuse/split/split'
 import ratingselect from '../ratingselect/ratingselect'
-import {formatData} from '../../common/js/data.js'
+import { formatDate } from '../../common/js/data.js'
 
 const POSITIVE = 0
 const NEGATIVE = 1
@@ -103,9 +103,9 @@ export default {
         thumbClass () {
             return function (type) {
                 if (type === 0) {
-                    return [this.$index['thumb_up'], this.$style['thumb_up']]
+                    return ['icon_thumb_up', this.$style['thumb_up']]
                 } else if (type === 1) {
-                    return [this.$index['thumb_down'], this.$style['thumb_down']]
+                    return ['icon_thumb_down', this.$style['thumb_down']]
                 }
             }
         }
@@ -135,9 +135,9 @@ export default {
             else
                 return type === this.selectType
         },
-        formatData (time) {
-            let date = new Data(time);
-            return formatData(date, 'YYYY-MM-DD hh:mm');
+        formatDate (time) {
+            let date = new Date(time);
+            return formatDate(date, 'YYYY-MM-DD hh:mm');
         },
         // 传递的自定义事件
         addCart (el) {

@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import BScroll from 'better-scroll'
 import icon from '../reuse/icon/icon'
 import shopcart from '../showcart/showcart'
@@ -56,14 +57,8 @@ export default {
     components:{
         icon, shopcart, cartcontrol, food
     },
-    props: {
-        seller: {
-            type: Object
-        }
-    },
     data () {
         return {
-            goods: [],
             classMap: ['decrease', 'discount', 'guarantee', 'invoice', 'special'],
             listHeight: {
                 menu: [],
@@ -75,10 +70,9 @@ export default {
         }
     },
     created () {
-        this.$http('/goods').then(response => {
-            response = response.data
-            if (response.errno === ERR_OK) {
-                this.goods = response.data
+        this.$store.dispatch('getGoods', {
+            fn: () => {
+                console.log(this)
                 this.$nextTick().then(() => {
                     this._initScroll()
                     this._calculateHeight()
@@ -88,6 +82,10 @@ export default {
         })
     },
     computed: {
+        ...mapState({
+            seller: state => state.seller,
+            goods: state => state.goods
+        }),
         currIndex () {
             var goods = this.listHeight.goods
             for (let i = 0, le = goods.length; i < le; i ++) {

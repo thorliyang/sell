@@ -1,7 +1,7 @@
 <template>
 <div id="app">
-    <v-header :seller="seller"></v-header>
-    <nav :class="[$style.nav,$index['border-1px']]">
+    <v-header></v-header>
+    <nav :class="$style['nav']">
         <div :class="$style['nav-item']">
             <router-link :to="{name: 'goods'}" :active-class="$style['active']">商品</router-link>
         </div>
@@ -13,13 +13,11 @@
         </div>
     </nav>
     <router-view :seller="seller"></router-view>
-
-    <!-- <article class="content"></article>
-    <footer class="footer"></footer> -->
 </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import header from './components/header/header'
 
 const ERR_OK = 0;
@@ -29,17 +27,12 @@ export default {
     components: {
         'v-header': header
     },
-    data() {
-        return {
-            seller: {}
-        }
-    },
     created() {
-        this.$http('/seller').then(response => {
-            response = response.data
-            if (response.errno === ERR_OK) {
-                this.seller = response.data
-            }
+        this.$store.dispatch('getSeller')
+    },
+    computed: {
+        ...mapState({
+            seller: state => state.seller
         })
     }
 }

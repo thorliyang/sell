@@ -5,7 +5,7 @@
                 <div :class="$style['content-left']">
                     <div :class="$style['logo-wrapper']">
                         <div :class="[$style['logo'], classCount]">
-                            <i :class="[$index['shopping_cart'], $style['shopping_cart']]"></i>
+                            <i class="icon_shopping_cart" :class="$style['shopping_cart']"></i>
                         </div>
                         <div :class="$style['num']" v-if="totalCount>0">{{totalCount}}</div>
                     </div>
@@ -242,7 +242,7 @@ export default {
             })
         },
         pay () {
-            if (this.totalPrice<this.minPrice) return
+            if (this.totalPrice<this.minPrice) return false
             window.alert(`成功支付${this.totalPrice}元`)
         }
     }

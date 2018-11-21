@@ -15,7 +15,7 @@
             </span>
         </div>
         <div :class="[$style['switch'], switchOnClass]" @click="toggleContent">
-            <span :class="[$style['check_circle'], $index['check_circle']]"></span>
+            <span class="icon_check_circle" :class="$style['check_circle']"></span>
             <span :class="$style['text']">只有看内容的评价</span>
         </div>
     </div>
