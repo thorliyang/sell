@@ -68,10 +68,6 @@ import split from '../reuse/split/split'
 import ratingselect from '../ratingselect/ratingselect'
 import { formatDate } from '../../common/js/data.js'
 
-const POSITIVE = 0
-const NEGATIVE = 1
-const ALL = 2
-
 export default {
     components: {
         cartcontrol, split, ratingselect
@@ -139,7 +135,7 @@ export default {
         },
         needShow(type, text) {
             if (this.onlyContent && !text) return false
-            if (this.selectType === ALL) 
+            if (this.selectType === this.criticType.ALL) 
                 return true
             else
                 return type === this.selectType
