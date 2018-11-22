@@ -26,7 +26,7 @@
                 >
                     <div
                         :class="$style['ball']"
-                        v-for="(ball, index) in balls"
+                        v-for="(ball, index) in cartcontrolAnimate"
                         :key="index"
                         v-show="ball.show"
                     >
@@ -63,6 +63,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import cartcontrol from '../reuse/cartcontrol/cartcontrol'
 import BScroll from 'better-scroll'
 
@@ -70,50 +71,18 @@ export default {
     components: {
         cartcontrol
     },
-    props: {
-        selectFoods: {
-            type: Array,
-            default () {
-                return [
-                    {
-                        price: 10,
-                        count: 1
-                    }
-                ];
-            }
-        },
-        'deliveryPrice': {
-            type: Number
-        },
-        'minPrice': {
-            type: Number,
-            default: 0
-        }
-    },
     data () {
         return {
-            balls: [
-                {
-                    show: false
-                },
-                {
-                    show: false
-                },
-                {
-                    show: false
-                },
-                {
-                    show: false
-                },
-                {
-                    show: false
-                }
-            ],
-            dropBalls: [],
             fold: true
         }
     },
     computed: {
+        ...mapState({
+            selectFoods: state => state.selectFoods,
+            cartcontrolAnimate: state => state.cartcontrolAnimate,
+            deliveryPrice: state => state.seller.deliveryPrice,
+            minPrice: state => state.seller.minPrice
+        }),
         totalPrice () {
             let total = 0
             this.selectFoods.forEach(food => {
@@ -170,64 +139,39 @@ export default {
         }
     },
     methods: {
-        drop (el) {
-            for (let i = 0, le = this.balls.length; i < le; i ++) {
-                let ball = this.balls[i]
-                if (!ball.show) {
-                    ball.show = true
-                    ball.el = el
-                    this.dropBalls.push(ball)
-                    return
-                }
-            }
-        },
         beforeEnter (el) {
-            let count = this.balls.length
+            let count = this.cartcontrolAnimate.length
             while (count--) {
-                let ball = this.balls[count]
+                let ball = this.cartcontrolAnimate[count]
                 if (ball.show) {
                     let rect = ball.el.getBoundingClientRect()
                     let x = rect.left - 32
                     let y = -(window.innerHeight - rect.top - 22)
 
                     var inner = el.querySelector(`.${this.$style.inner}`)
-                    
-                    this.velocity(el, { translateY: y }, { duration: 0 })
-                    
-                    this.velocity(inner, { translateX: x }, { duration: 0 })
 
-                    // el.style.transform = `translate3d(${x}px, ${y}px, 0)`
-                    // el.style.webkitTransform = `translateY(${y}px)`
-                    // inner.style.transform = `translateX(${x}px)`
+                    this.velocity(el, { translateY: y }, { duration: 0 })
+                    this.velocity(inner, { translateX: x }, { duration: 0 })
                 }
             }
         },
         enter (el, done) {
+            // 刷新浏览器的啥啥啥？
             el.offsetHeight
+            var inner = el.querySelector(`.${this.$style.inner}`)
 
             this.velocity(el, { translateY: 0}, {
                 duration: 500,
                 easing: [.49, -.29, .75, .41]
             })
-
-            var inner = el.querySelector(`.${this.$style.inner}`)
             this.velocity(inner, { translateX: 0}, {
                 duration: 500,
                 easing: 'linear',
                 complete: done
             })
-
-            // el.style.transform = 'translateY(0)'
-            // el.style.transition = 'all .5s cubic-bezier(.49, -.29, .75, .41)'
-            // inner.style.transform = `translateX(0)`
-            // inner.style.transition = 'all .5s linear'
-            // done()
         },
         afterEnter (el) {
-            let ball = this.dropBalls.shift()
-            if (ball) {
-                ball.show = false
-            }
+            this.$store.commit('removeCartcontrolAnimate')
         },
         toggleList () {
             if (!this.totalCount) return

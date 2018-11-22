@@ -3,51 +3,44 @@
         <div :class="$style['food']" v-show="showFlag" ref="food">
             <div :class="$style['food-content']">
                 <div :class="$style['image-header']">
-                    <img :src="food.image" />
+                    <img :src="selectedFood.image" />
                     <div :class="$style['back']" @click="hide">
                         <i class="icon_arrow_lift" :class="$style['arrow_lift']"></i>
                     </div>
                 </div>
                 <div :class="$style['content']">
-                    <h1 :class="$style['title']">{{food.name}}</h1>
+                    <h1 :class="$style['title']">{{selectedFood.name}}</h1>
                     <div :class="$style['detail']">
-                        <span :class="$style['sell-count']">月售{{food.sellCount}}份</span>
-                        <span :class="$style['rating']">好评率{{food.rating}}</span>
+                        <span :class="$style['sell-count']">月售{{selectedFood.sellCount}}份</span>
+                        <span :class="$style['rating']">好评率{{selectedFood.rating}}</span>
                     </div>
                     <div :class="$style['price']">
-                        <span :class="$style['now']">￥{{food.price}}</span>
-                        <span :class="$style['old']" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
+                        <span :class="$style['now']">￥{{selectedFood.price}}</span>
+                        <span :class="$style['old']" v-if="selectedFood.oldPrice">￥{{selectedFood.oldPrice}}</span>
                     </div>
                     <div :class="$style['cartcontrol-wrapper']">
-                        <cartcontrol :food="food" @addCart="cartAdd($event)"/>
+                        <cartcontrol :food="selectedFood"/>
                     </div>
                     <transition name="buy">
                         <div 
                             :class="$style['buy']" 
-                            v-show="!food.count || food.count===0" 
+                            v-show="!selectedFood.count || selectedFood.count===0" 
                             @click.stop.prevent="addFirst"
                         >加入购物车</div>
                     </transition>
                 </div>
-                <split v-show="food.info" />
-                <div :class="$style['info']" v-show="food.info">
+                <split v-show="selectedFood.info" />
+                <div :class="$style['info']" v-show="selectedFood.info">
                     <h1 :class="$style['title']">商品信息</h1>
-                    <p :class="$style['text']">{{food.info}}</p>
+                    <p :class="$style['text']">{{selectedFood.info}}</p>
                 </div>
                 <split />
                 <div :class="$style['rating']">
                     <h1 :class="$style['title']">商品评价</h1>
-                    <ratingselect 
-                        :ratings="food.ratings"
-                        :select-type="selectType" 
-                        :only-content="onlyContent" 
-                        :desc="desc"
-                        @ratingTypeSelect="ratingTypeSelect($event)"
-                        @toggleContent="toggleContent($event)"
-                    />
+                    <ratingselect :ratings="selectedFood.ratings" />
                     <div :class="$style['rating-wrapper']">
-                        <ul v-show="food.ratings">
-                            <li :class="$style['rating-item']" v-for="(rating, index) in food.ratings" :key="index" v-show="needShow(rating.rateType, rating.text)">
+                        <ul v-show="selectedFood.ratings">
+                            <li :class="$style['rating-item']" v-for="(rating, index) in selectedFood.ratings" :key="index" v-show="needShow(rating.rateType, rating.text)">
                                 <div :class="$style['user']">
                                     <span :class="$style['name']">{{rating.username}}</span>
                                     <img :class="$style['avatar']" width="12" height="12" :src="rating.avatar" />
@@ -58,7 +51,7 @@
                                 </p>
                             </li>
                         </ul>
-                        <div :class="$style['no-rating']" v-show="!food.ratings">暂无评价</div>
+                        <div :class="$style['no-rating']" v-show="!selectedFood.ratings">暂无评价</div>
                     </div>
                 </div>
             </div>
@@ -68,6 +61,7 @@
 
 <script>
 import Vue from 'vue'
+import { mapState, mapMutations } from 'vuex'
 import BScroll from 'better-scroll'
 import cartcontrol from '../reuse/cartcontrol/cartcontrol'
 import split from '../reuse/split/split'
@@ -83,15 +77,13 @@ export default {
         cartcontrol, split, ratingselect
     },
     props: {
-        food: {
+        selectedFood: {
             type: Object
         }
     },
     data () {
         return {
             showFlag: false,
-            selectType: ALL,
-            onlyContent: false,
             desc: {
                 all: '全部',
                 positive: '推荐',
@@ -100,6 +92,11 @@ export default {
         }
     },
     computed: {
+        ...mapState('food', {
+            selectType: state => state.selectType,
+            onlyContent: state => state.onlyContent,
+            criticType: state => state.criticType
+        }),
         thumbClass () {
             return function (type) {
                 if (type === 0) {
@@ -111,10 +108,22 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('food', [
+            'modifSelectType', 
+            'modifOnlyContent',
+            'modifDesc'
+        ]),
         show () {
             this.showFlag = true
-            this.selectType = ALL
-            this.onlyContent = false
+            this.modifSelectType({
+                selectType: this.criticType.ALL
+            })
+            this.modifOnlyContent({
+                onlyContent: false
+            })
+            this.modifDesc({
+                desc: this.desc
+            })
             this.$nextTick(() => {
                 if (!this.scroll) {
                     this.scroll = new BScroll(this.$refs.food, {
@@ -139,22 +148,14 @@ export default {
             let date = new Date(time);
             return formatDate(date, 'YYYY-MM-DD hh:mm');
         },
-        // 传递的自定义事件
-        addCart (el) {
-            this.$emit('cartAdd', el)
-        },
         addFirst (e) {
             if (!e._constructed) return
-            Vue.set(this.food, 'count', 1)
-            this.$emit('cartAdd', e.target)
-        },
-        // 接收的自定义事件
-        ratingTypeSelect (type) {
-            this.selectType = type;
-        },
-        toggleContent (content) {
-            this.onlyContent = content;
-        },
+            Vue.set(this.selectedFood, 'count', 1)
+            this.$store.commit('modifSelectFoods')
+            this.$store.commit('addCartcontrolAnimate', {
+                element: e.target
+            })
+        }
     }
 }
 </script>

@@ -10,12 +10,18 @@
 
 <script>
 import Vue from 'vue'
+import { mapState } from 'vuex'
 
 export default {
     props: {
         food: {
             type: Object
         }
+    },
+    computed: {
+        ...mapState({
+            selectFoods: state => state.selectFoods
+        })
     },
     methods: {
         addCart (e) {
@@ -25,7 +31,10 @@ export default {
             } else {
                 this.food.count ++
             }
-            this.$emit('cartAdd', e.target)
+            this.$store.commit('modifSelectFoods')
+            this.$store.commit('addCartcontrolAnimate', {
+                element: e.target
+            })
         },
         decreaseCart (e) {
             if (!e._constructed) return

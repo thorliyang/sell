@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
 import split from '../reuse/split/split'
 
 const POSITIVE = 0
@@ -35,27 +36,15 @@ export default {
             default () {
                 return []
             }
-        },
-        selectType: {
-            type: Number,
-            default: ALL
-        },
-        onlyContent: {
-            type: Boolean,
-            default: false
-        },
-        desc: {
-            type: Object,
-            default () {
-                return {
-                    all: '全部',
-                    positive: '满意',
-                    negative: '不满意'
-                }
-            }
         }
     },
     computed: {
+        ...mapState('food', {
+            criticType: state => state.criticType,
+            selectType: state => state.selectType,
+            onlyContent: state => state.onlyContent,
+            desc: state => state.desc
+        }),
         positives () {
             return this.ratings.filter(rating => {
                 return rating.rateType === POSITIVE
@@ -81,13 +70,21 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('food', [
+            'modifSelectType',
+            'modifOnlyContent'
+        ]),
         select (e, type) {
             if (!e._constructed) return
-            this.$emit('ratingTypeSelect', type)
+            this.modifSelectType({
+                selectType: type
+            })
         },
         toggleContent (e) {
-             if (!e._constructed) return
-            this.$emit('toggleContent', !this.onlyContent)
+            if (!e._constructed) return
+            this.modifOnlyContent({
+                onlyContent: !this.onlyContent
+            })
         }
     }
 }

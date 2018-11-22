@@ -30,7 +30,7 @@
                                     <span :class="$style['old']" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                                 </div>
                                 <div :class="$style['cartcontrol-wrapper']">
-                                    <cartcontrol :food="food" @cartAdd="cartAdd($event)"/>
+                                    <cartcontrol :food="food"/>
                                 </div>
                             </div>
                         </li>
@@ -38,16 +38,16 @@
                 </li>
             </ul>
         </div>
-        <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"/>
-        <food :food="selectedFood" @cartAdd="cartAdd($event)" ref="food"/>
+        <showcart />
+        <food :selectedFood="selectedFood"  ref="food"/>
     </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'vuex'
 import BScroll from 'better-scroll'
 import icon from '../reuse/icon/icon'
-import shopcart from '../showcart/showcart'
+import showcart from '../showcart/showcart'
 import cartcontrol from '../reuse/cartcontrol/cartcontrol'
 import food from '../food/food'
 
@@ -55,24 +55,23 @@ const ERR_OK = 0
 
 export default {
     components:{
-        icon, shopcart, cartcontrol, food
+        icon, showcart, cartcontrol, food
     },
     data () {
         return {
+            selectedFood: {},
             classMap: ['decrease', 'discount', 'guarantee', 'invoice', 'special'],
             listHeight: {
                 menu: [],
                 goods: []
             },
             scrollY: 0,
-            goodsHeight: 0,
-            selectedFood: {}
+            goodsHeight: 0
         }
     },
     created () {
         this.$store.dispatch('getGoods', {
             fn: () => {
-                console.log(this)
                 this.$nextTick().then(() => {
                     this._initScroll()
                     this._calculateHeight()
@@ -84,7 +83,8 @@ export default {
     computed: {
         ...mapState({
             seller: state => state.seller,
-            goods: state => state.goods
+            goods: state => state.goods,
+            selectFoods: state => state.selectFoods,
         }),
         currIndex () {
             var goods = this.listHeight.goods
@@ -96,17 +96,6 @@ export default {
                 }
             }
             return 0
-        },
-        selectFoods () {
-            let foods = []
-            this.goods.forEach(good => {
-                good.foods.forEach(food => {
-                    if (food.count) {
-                        foods.push(food)
-                    }
-                })
-            })
-            return foods
         }
     },
     methods: {
@@ -130,12 +119,7 @@ export default {
                 probeType: 3
             })
             this.foodsScroll.on('scroll', pos => {
-                // this.scrollY = Math.round(pos.y)
-                // this.scrollY = this.scrollY > 0 ? 0 : Math.abs(this.scrollY)
                 this.scrollY = Math.abs(Math.round(pos.y))
-                // 右侧根据左侧滚动
-                // console.log(this.goodsHeight)
-
             })
         },
         _calculateHeight () {
@@ -151,12 +135,7 @@ export default {
                 mH += item.clientHeight
                 this.listHeight.menu.push(mH)
             })
-        },
-        // 接收的自定义事件
-        cartAdd(el) {
-            // 引入子组件的方法
-            this.$refs.shopcart.drop(el)
-        },
+        }
     }
 }
 </script>
