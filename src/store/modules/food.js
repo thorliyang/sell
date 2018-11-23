@@ -19,14 +19,16 @@ const food = {
         }
     },
     mutations: {
+        initialize(state, payload) {
+            state.selectType = payload.selectType
+            state.onlyContent = payload.onlyContent
+            state.desc = payload.desc
+        },
         modifSelectType(state, payload) {
             state.selectType = payload.selectType
         },
         modifOnlyContent(state, payload) {
             state.onlyContent = payload.onlyContent
-        },
-        modifDesc(state, payload) {
-            state.desc = payload.desc
         },
     }
 }

@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations } from 'vuex'
 import split from '../reuse/split/split'
 
 export default {

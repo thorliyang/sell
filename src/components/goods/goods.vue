@@ -39,7 +39,7 @@
             </ul>
         </div>
         <showcart />
-        <food :selectedFood="selectedFood"  ref="food"/>
+        <food :selectedFood="selectedFood" ref="food"/>
     </div>
 </template>
 
@@ -50,8 +50,6 @@ import icon from '../reuse/icon/icon'
 import showcart from '../showcart/showcart'
 import cartcontrol from '../reuse/cartcontrol/cartcontrol'
 import food from '../food/food'
-
-const ERR_OK = 0
 
 export default {
     components:{

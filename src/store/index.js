@@ -14,6 +14,7 @@ const store = new Vuex.Store({
     state: {
         seller: {},
         goods: [],
+        ratings: [],
         selectFoods: [],
         cartcontrolAnimate: [
             {
@@ -40,6 +41,9 @@ const store = new Vuex.Store({
         },
         loadGoods(state, payload) {
             state.goods = payload.goods
+        },
+        loadRatings(state, payload) {
+            state.ratings = payload.ratings
         },
         modifSelectFoods(state) {
             let foods = []
@@ -95,6 +99,17 @@ const store = new Vuex.Store({
                         goods: resp.data
                     })
                     options.fn()
+                }
+            })
+        },
+        getRatings({ commit }, options) {
+            const req = fetchDate('ratings')
+            req.then(resp => {
+                resp = resp.data
+                if (resp.errno === ERR_OK) {
+                    commit('loadRatings', {
+                        ratings: resp.data
+                    })
                 }
             })
         }

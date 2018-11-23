@@ -105,19 +105,15 @@ export default {
     },
     methods: {
         ...mapMutations('food', [
+            'initialize',
             'modifSelectType', 
             'modifOnlyContent',
-            'modifDesc'
         ]),
         show () {
             this.showFlag = true
-            this.modifSelectType({
-                selectType: this.criticType.ALL
-            })
-            this.modifOnlyContent({
-                onlyContent: false
-            })
-            this.modifDesc({
+            this.initialize({
+                selectType: this.criticType.ALL,
+                onlyContent: false,
                 desc: this.desc
             })
             this.$nextTick(() => {

@@ -12,7 +12,7 @@
             <router-link :to="{name: 'seller'}" :active-class="$style['active']">商家</router-link>
         </div>
     </nav>
-    <router-view :seller="seller"></router-view>
+    <router-view></router-view>
 </div>
 </template>
 
