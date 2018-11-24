@@ -104,6 +104,10 @@ export default {
         }
     },
     methods: {
+        ...mapMutations([
+            'modifSelectFoods',
+            'addCartcontrolAnimate'
+        ]),
         ...mapMutations('food', [
             'initialize',
             'modifSelectType', 
@@ -143,8 +147,8 @@ export default {
         addFirst (e) {
             if (!e._constructed) return
             Vue.set(this.selectedFood, 'count', 1)
-            this.$store.commit('modifSelectFoods')
-            this.$store.commit('addCartcontrolAnimate', {
+            this.modifSelectFoods()
+            this.addCartcontrolAnimate({
                 element: e.target
             })
         }

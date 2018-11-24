@@ -250,7 +250,7 @@ export default {
                     font-size: 9px;
                     font-weight: 700;
                     color: #fff;
-                    background-color: rgba(240, 20, 20,);
+                    background-color: rgb(240, 20, 20);
                     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4);
                 }
             }

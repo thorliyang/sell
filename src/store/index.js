@@ -110,6 +110,7 @@ const store = new Vuex.Store({
                     commit('loadRatings', {
                         ratings: resp.data
                     })
+                    options.fn()
                 }
             })
         }

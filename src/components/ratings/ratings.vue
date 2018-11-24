@@ -1,5 +1,5 @@
 <template>
-    <div styleName="ratings">
+    <div styleName="ratings" ref="ratings">
         <div styleName="ratings-content">
             <div styleName="overview">
                 <div styleName="overview-left">
@@ -25,17 +25,42 @@
                 </div>
             </div>
             <split />
-            <ratingselect :ratings="ratings"/>
+            <ratingselect :ratings="ratings" @click="updateScroll"/>
+            <div styleName="ratings-wrapper">
+                <ul>
+                    <li styleName="rating-item" v-for="(rating, index) in ratings" :key="index">
+                        <div styleName="avatar">
+                            <img :src="rating.avatar" width="28" height="28" />
+                        </div>
+                        <div styleName="content">
+                            <h1 styleName="name">{{rating.username}}</h1>
+                            <div styleName="star-wrapper">
+                                <star styleName="star" :size="24" :score="rating.score"/>
+                                <span styleName="delivery" v-show="!!rating.deliveryTime">{{rating.deliveryTime}}分钟送达</span>
+                            </div>
+                            <p styleName="text">{{rating.text}}</p>
+                            <div styleName="recommed" v-show="rating.recommend.length>0">
+                                <span :class="[rateTypeClass(rating.rateType), $style.rateType]" ></span>
+                                <span styleName="item" v-for="(item, index) in rating.recommend" :key="index">{{item}}</span>
+                            </div>
+                        </div>
+                        <div styleName="rateTime">{{formatDate(rating.rateTime)}}</div>
+                    </li>
+                </ul>
+                <div :class="$style['no-rating']" v-show="!ratings.length>0">暂无评价</div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import CSSModules from 'vue-css-modules'
+import BScroll from 'better-scroll'
 import { mapState, mapMutations } from 'vuex'
 import star from '../reuse/star/star'
 import split from '../reuse/split/split'
 import ratingselect from '../ratingselect/ratingselect'
+import { formatDate } from '../../common/js/data.js'
 
 export default {
     mixins: [CSSModules()],
@@ -48,7 +73,7 @@ export default {
                 all: '全部',
                 positive: '满意',
                 negative: '不满意'
-            }
+            },
         }
     },
     computed: {
@@ -60,23 +85,51 @@ export default {
             selectType: state => state.selectType,
             onlyContent: state => state.onlyContent,
             criticType: state => state.criticType
-        })
+        }),
+        rateTypeClass () {
+            return function (type) {
+                return type === 0 ? 'icon_thumb_up' : 'icon_thumb_down'
+            }
+        }
     },
     methods: {
         ...mapMutations('food', [
             'initialize',
             'modifSelectType', 
             'modifOnlyContent',
-        ])
+        ]),
+        updateScroll () {
+            this.$nextTick(() => {
+                if (!this.scroll) {
+                    this.scroll = new BScroll(this.$refs.ratings, {
+                        click: true
+                    })
+                } else {
+                    this.scroll.refresh()
+                }
+            })
+        },
+        formatDate (time) {
+            let date = new Date(time);
+            return formatDate(date, 'YYYY-MM-DD hh:mm');
+        },
     },
     created () {
-        this.$store.dispatch('getRatings')
+        this.$store.dispatch('getRatings', {
+            fn: () => {
+                this.$nextTick().then(() => {
+                    this.scroll = new BScroll(this.$refs.ratings, {
+                        click: true
+                    })
+                })
+                
+            }
+        })
         this.initialize({
             selectType: this.criticType.ALL,
             onlyContent: false,
             desc: this.desc
         })
-        
     }
 }
 </script>
@@ -166,6 +219,86 @@ export default {
                         font-size: 12px;
                         color: rgb(147, 153, 159);
                     }
+                }
+            }
+        }
+        .ratings-wrapper {
+            padding: 0 18px;
+            .rating-item {
+                display: flex;
+                padding: 18px 0;
+                .border-1px(rgba(7, 17, 27, 0.1));
+                .avatar {
+                    flex: 0 0 28px;
+                    width: 28px;
+                    height: 28px;
+                    margin-right: 12px;
+                    img {
+                        border-radius: 50%;
+                    }
+                }
+                .content {
+                    position: relative;
+                    flex: 1;
+                    .name {
+                        margin-bottom: 4px;
+                        line-height: 12px;
+                        font-size: 10px;
+                    }
+                    .star-wrapper {
+                        margin-bottom: 6px;
+                        font-size: 0;
+                        .star {
+                            display: inline-block;
+                            vertical-align: top;
+                            margin-right: 6px;
+                        }
+                        .delivery {
+                            display: inline-block;
+                            vertical-align: top;
+                            line-height: 12px;
+                            font-size: 10px;
+                            color: rgb(147, 153, 159);
+                            text-align: right;
+                        }
+                    }
+                    .text {
+                        margin-bottom: 6px;
+                        line-height: 18px;
+                        font-size: 12px;
+                        color: rgb(7, 17, 27);
+                    }
+                    .recommed {
+                        .rateType, .item {
+                            display: inline-block;
+                            vertical-align: top;
+                            line-height: 18px;
+                            margin: 0 8px 4px 0;
+                            font-size: 9px;
+                        }
+                        .rateType {
+                            &:global(.icon_thumb_up) {
+                                color: rgb(0, 160, 220);
+                            }
+                            &:global(.icon_thumb_down) {
+                                color: rgb(183, 187, 191);
+                            }
+                        }
+                        .item {
+                            padding: 0 6px;
+                            border-radius: 1px;
+                            border: 1px solid rgba(7, 17, 27, 0.1);
+                            background-color: #fff;
+                            color: rgb(147, 153, 159);
+                        }
+                    }
+                }
+                .rateTime {
+                    position: absolute;
+                    top: 18px;
+                    right: 0;
+                    font-size: 10px;
+                    color: rgb(147, 153, 159);
                 }
             }
         }
