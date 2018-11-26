@@ -31,7 +31,6 @@ export default {
             } else {
                 this.food.count ++
             }
-            console.log(this.$store.state.goods)
             this.$store.commit('modifSelectFoods')
             this.$store.commit('addCartcontrolAnimate', {
                 element: e.target

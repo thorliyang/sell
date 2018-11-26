@@ -68,6 +68,10 @@ import split from '../reuse/split/split'
 import ratingselect from '../ratingselect/ratingselect'
 import { formatDate } from '../../common/js/data.js'
 
+const POSITIVE = 0
+const NEGATIVE = 1
+const ALL = 2
+
 export default {
     components: {
         cartcontrol, split, ratingselect
@@ -91,7 +95,6 @@ export default {
         ...mapState('food', {
             selectType: state => state.selectType,
             onlyContent: state => state.onlyContent,
-            criticType: state => state.criticType
         }),
         thumbClass () {
             return function (type) {
@@ -109,15 +112,13 @@ export default {
             'addCartcontrolAnimate'
         ]),
         ...mapMutations('food', [
-            'initialize',
-            'modifSelectType', 
-            'modifOnlyContent',
+            'initialize'
         ]),
         show () {
             this.showFlag = true
             this.initialize({
-                selectType: this.criticType.ALL,
-                onlyContent: false,
+                selectType: ALL,
+                onlyContent: true,
                 desc: this.desc
             })
             this.$nextTick(() => {
@@ -135,7 +136,7 @@ export default {
         },
         needShow(type, text) {
             if (this.onlyContent && !text) return false
-            if (this.selectType === this.criticType.ALL) 
+            if (this.selectType === ALL)
                 return true
             else
                 return type === this.selectType

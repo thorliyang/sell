@@ -1,5 +1,5 @@
 <template>
-    <span :class="[$style['icon-'+variety], $style[classMap[type]]]"></span>
+    <span :class="[$style['icon_'+variety], $style[classMap[type]]]"></span>
 </template>
 
 <script>
@@ -25,7 +25,7 @@ export default {
     .bg-image(@url, 'icon', '/reuse')
 }
 
-.icon-1 {
+.icon_1 {
     display: inline-block;
     vertical-align: top;
     width: 12px;
@@ -49,7 +49,7 @@ export default {
         .icon-image('special_1');
     }
 }
-.icon-2 {
+.icon_2 {
     display: inline-block;
     width: 16px;
     height: 16px;
@@ -73,7 +73,7 @@ export default {
         .icon-image('special_2');
     }
 }
-.icon-3 {
+.icon_3 {
     display: inline-block;
     vertical-align: top;
     width: 12px;
@@ -95,6 +95,30 @@ export default {
     }
     &.special {
         .icon-image('special_3');
+    }
+}
+.icon_4 {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    vertical-align: top;
+    margin-right: 6px;
+    background-size: 16px;
+    background-repeat: no-repeat;
+    &.decrease {
+        .icon-image('decrease_4');
+    }
+    &.discount {
+        .icon-image('discount_4');
+    }
+    &.guarantee {
+        .icon-image('guarantee_4');
+    }
+    &.invoice {
+        .icon-image('invoice_4');
+    }
+    &.special {
+        .icon-image('special_4');
     }
 }
 </style>

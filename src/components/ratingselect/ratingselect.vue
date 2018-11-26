@@ -25,6 +25,10 @@
 import { mapState, mapMutations } from 'vuex'
 import split from '../reuse/split/split'
 
+const POSITIVE = 0
+const NEGATIVE = 1
+const ALL = 2
+
 export default {
     props: {
         ratings: {
@@ -36,30 +40,29 @@ export default {
     },
     computed: {
         ...mapState('food', {
-            criticType: state => state.criticType,
             selectType: state => state.selectType,
             onlyContent: state => state.onlyContent,
             desc: state => state.desc
         }),
         positives () {
             return this.ratings.filter(rating => {
-                return rating.rateType === this.criticType.POSITIVE
+                return rating.rateType === POSITIVE
             })
         },
         negatives () {
             return this.ratings.filter(rating => {
-                return rating.rateType === this.criticType.NEGATIVE
+                return rating.rateType === NEGATIVE
             })
         },
         // 类名计算
         positiveActiveClass () {
-            return this.selectType === this.criticType.POSITIVE ? this.$style.active : false
+            return this.selectType === POSITIVE ? this.$style.active : false
         },
         negativeActiveClass () {
-            return this.selectType === this.criticType.NEGATIVE ? this.$style.active : false
+            return this.selectType === NEGATIVE ? this.$style.active : false
         },
         allActiveClass () {
-            return this.selectType === this.criticType.ALL ? this.$style.active : false
+            return this.selectType === ALL ? this.$style.active : false
         },
         switchOnClass () {
             return this.onlyContent === true ? this.$style.on : false

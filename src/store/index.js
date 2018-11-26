@@ -90,7 +90,7 @@ const store = new Vuex.Store({
                 }
             })
         },
-        getGoods({ commit }, options) {
+        getGoods({ commit }) {
             const req = fetchDate('goods')
             req.then(resp => {
                 resp = resp.data
@@ -98,7 +98,6 @@ const store = new Vuex.Store({
                     commit('loadGoods', {
                         goods: resp.data
                     })
-                    options.fn()
                 }
             })
         },

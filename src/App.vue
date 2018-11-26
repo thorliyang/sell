@@ -13,19 +13,22 @@
         </div>
     </nav>
     <router-view></router-view>
+    <showcart />
 </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import header from './components/header/header'
+import showcart from './components/showcart/showcart'
 
 const ERR_OK = 0;
 
 export default {
     name: 'app',
     components: {
-        'v-header': header
+        'v-header': header,
+        showcart
     },
     created() {
         this.$store.dispatch('getSeller')

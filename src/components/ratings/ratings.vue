@@ -28,7 +28,7 @@
             <ratingselect :ratings="ratings" @click="updateScroll"/>
             <div styleName="ratings-wrapper">
                 <ul>
-                    <li styleName="rating-item" v-for="(rating, index) in ratings" :key="index">
+                    <li styleName="rating-item" v-for="(rating, index) in ratings" :key="index" v-show="needShow(rating.rateType, rating.text)">
                         <div styleName="avatar">
                             <img :src="rating.avatar" width="28" height="28" />
                         </div>
@@ -43,8 +43,8 @@
                                 <span :class="[rateTypeClass(rating.rateType), $style.rateType]" ></span>
                                 <span styleName="item" v-for="(item, index) in rating.recommend" :key="index">{{item}}</span>
                             </div>
+                            <div styleName="time">{{formatDate(rating.rateTime)}}</div>
                         </div>
-                        <div styleName="rateTime">{{formatDate(rating.rateTime)}}</div>
                     </li>
                 </ul>
                 <div :class="$style['no-rating']" v-show="!ratings.length>0">暂无评价</div>
@@ -57,10 +57,14 @@
 import CSSModules from 'vue-css-modules'
 import BScroll from 'better-scroll'
 import { mapState, mapMutations } from 'vuex'
+import { formatDate } from '../../common/js/data.js'
 import star from '../reuse/star/star'
 import split from '../reuse/split/split'
 import ratingselect from '../ratingselect/ratingselect'
-import { formatDate } from '../../common/js/data.js'
+
+const POSITIVE = 0
+const NEGATIVE = 1
+const ALL = 2
 
 export default {
     mixins: [CSSModules()],
@@ -83,8 +87,7 @@ export default {
         }),
         ...mapState('food', {
             selectType: state => state.selectType,
-            onlyContent: state => state.onlyContent,
-            criticType: state => state.criticType
+            onlyContent: state => state.onlyContent
         }),
         rateTypeClass () {
             return function (type) {
@@ -94,9 +97,7 @@ export default {
     },
     methods: {
         ...mapMutations('food', [
-            'initialize',
-            'modifSelectType', 
-            'modifOnlyContent',
+            'initialize'
         ]),
         updateScroll () {
             this.$nextTick(() => {
@@ -108,6 +109,13 @@ export default {
                     this.scroll.refresh()
                 }
             })
+        },
+        needShow(type, text) {
+            if (this.onlyContent && !text) return false
+            if (this.selectType === ALL) 
+                return true
+            else
+                return type === this.selectType
         },
         formatDate (time) {
             let date = new Date(time);
@@ -126,8 +134,8 @@ export default {
             }
         })
         this.initialize({
-            selectType: this.criticType.ALL,
-            onlyContent: false,
+            selectType: ALL,
+            onlyContent: true,
             desc: this.desc
         })
     }
@@ -138,7 +146,7 @@ export default {
     .ratings {
         position: absolute;
         top: 174px;
-        bottom: 0;
+        bottom: 46px;
         left: 0;
         width: 100%;
         overflow: hidden;
@@ -293,9 +301,9 @@ export default {
                         }
                     }
                 }
-                .rateTime {
+                .time {
                     position: absolute;
-                    top: 18px;
+                    top: 0;
                     right: 0;
                     font-size: 10px;
                     color: rgb(147, 153, 159);

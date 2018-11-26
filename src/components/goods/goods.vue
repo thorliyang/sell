@@ -38,7 +38,6 @@
                 </li>
             </ul>
         </div>
-        <showcart />
         <food :selectedFood="selectedFood" ref="food"/>
     </div>
 </template>
@@ -47,13 +46,12 @@
 import { mapState } from 'vuex'
 import BScroll from 'better-scroll'
 import icon from '../reuse/icon/icon'
-import showcart from '../showcart/showcart'
 import cartcontrol from '../reuse/cartcontrol/cartcontrol'
 import food from '../food/food'
 
 export default {
     components:{
-        icon, showcart, cartcontrol, food
+        icon, cartcontrol, food
     },
     data () {
         return {
@@ -68,14 +66,13 @@ export default {
         }
     },
     created () {
-        this.$store.dispatch('getGoods', {
-            fn: () => {
-                this.$nextTick().then(() => {
-                    this._initScroll()
-                    this._calculateHeight()
-                    this.goodsHeight = this.$el.clientHeight
-                })
-            }
+        if (this.goods.length === 0) {
+            this.$store.dispatch('getGoods')
+        } 
+        this.$nextTick().then(() => {
+            this._initScroll()
+            this._calculateHeight()
+            this.goodsHeight = this.$el.clientHeight
         })
     },
     computed: {

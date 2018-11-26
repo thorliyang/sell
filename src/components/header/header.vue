@@ -98,6 +98,9 @@ export default {
             this.detailShow = false
         }
     },
+    created () {
+        
+    }
 }
 </script>
 
