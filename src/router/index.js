@@ -6,6 +6,8 @@ import seller from '../components/seller/seller'
 
 Vue.use(Router);
 
+const id = 1;
+
 const routes = [
     {
         path: '/',

@@ -57,7 +57,7 @@
 import CSSModules from 'vue-css-modules'
 import BScroll from 'better-scroll'
 import { mapState, mapMutations } from 'vuex'
-import { formatDate } from '../../common/js/data.js'
+import formatDate from '../../common/js/data.js'
 import star from '../reuse/star/star'
 import split from '../reuse/split/split'
 import ratingselect from '../ratingselect/ratingselect'

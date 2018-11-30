@@ -28,8 +28,8 @@
                         </div>
                     </li>
                 </ul>
-                <div styleName="favorite">
-                    <span class="icon_favorite" styleName="icon_favorite :on"></span>
+                <div styleName="favorite" @click="toggleFavorite">
+                    <span class="icon_favorite" styleName="icon_favorite :active"></span>
                     <span styleName="text">{{favoriteText}}</span>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                     <p styleName="content">{{seller.bulletin}}</p>
                 </div>
                 <ul styleName="supports" v-if="seller.supports">
-                    <li styleName="support-item" v-for="(item, index) in seller.supports" :key="index">
+                    <li styleName="support-item" v-for="(item, index) in seller.supports" :key="index" >
                         <icon :variety="4" :type="item.type" />
                         <span styleName="text">{{item.description}}</span>
                     </li>
@@ -51,8 +51,8 @@
                 <h1 styleName="title">公告与活动</h1>
                 <div styleName="pic-wrapper" ref="picWrapper">
                     <ul styleName="pic-list" ref="picList">
-                        <li styleName="pic-item" v-for="(pic, index) in seller.pics" :key="index">
-                            <img :src="pic" width="120" height="90" />
+                        <li styleName="pic-item" :style="{marginRight: PICMARGIN + 'px'}" v-for="(pic, index) in seller.pics" :key="index" style="">
+                            <img :src="pic" :width="PICWIDTH" height="90" />
                         </li>
                     </ul>
                 </div>
@@ -72,12 +72,10 @@
 import { mapState, mapMutations } from 'vuex'
 import CSSModules from 'vue-css-modules'
 import BScroll from 'better-scroll'
+import { saveToLocal, loadFromLocal } from '../../common/js/store.js'
 import star from '../reuse/star/star'
 import split from '../reuse/split/split'
 import icon from '../reuse/icon/icon'
-
-const PICWIDTH = 120
-const PICMARGIN = 6
 
 export default {
     mixins: [CSSModules()],
@@ -86,13 +84,27 @@ export default {
     },
     data () {
         return {
-            favoriteText: '收藏'
+            PICWIDTH: 120,
+            PICMARGIN: 6,
+            favorite: false
         }
     },
     computed: {
         ...mapState({
             seller: state => state.seller
-        })
+        }),
+        favoriteText () {
+            return this.active ? '已收藏' : '收藏'
+        },
+        active: {
+            get () {
+                this.favorite = loadFromLocal(this.seller.id, 'favorite', false)
+                return this.favorite
+            },
+            set (newVal) {
+                this.favorite = newVal
+            }
+        }
     },
     watch: {
         seller () {
@@ -115,7 +127,7 @@ export default {
         _initPics () {
             if (this.seller.pics) {
                 let pics = this.seller.pics
-                let width = (PICWIDTH + PICMARGIN) * pics.length - PICMARGIN
+                let width = (this.PICWIDTH + this.PICMARGIN) * pics.length - this.PICMARGIN
                 this.$nextTick().then(() => {
                     this.$refs.picList.style.width = width + 'px'
                     if (!this.picScroll) {
@@ -128,6 +140,10 @@ export default {
                     }
                 })
             }
+        },
+        toggleFavorite (e) {
+            this.active = !this.active
+            saveToLocal(this.seller.id, 'favorite', this.favorite)
         }
     },
     created () {
@@ -200,7 +216,8 @@ export default {
         .favorite {
             position: absolute;
             top: 18px;
-            right: 18px;
+            right: 11px;
+            width: 50px;
             text-align: center;
             .icon_favorite {
                 display: block;
@@ -208,14 +225,14 @@ export default {
                 line-height: 24px;
                 font-size: 24px;
                 color: #d4d6d9;
-                &.on {
+                &.active {
                     color: rgb(240, 20, 20);
                 }
             }
             .text {
                 line-height: 10px;
                 font-size: 10px;
-                color: rgb(77, 85, 93)
+                color: rgb(77, 85, 93);
             }
         }
     }
@@ -265,9 +282,8 @@ export default {
                 font-size: 0;
                 .pic-item {
                     display: inline-block;
-                    margin-right: 6px;
                     &:last-child {
-                        margin-right: 0;
+                        margin-right: 0 !important; 
                     }
                 }
             }

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { fetchDate } from '../api'
+import urlParse from '../common/js/util'
 import food from './modules/food'
 
 Vue.use(Vuex);
@@ -12,7 +13,12 @@ const store = new Vuex.Store({
         food
     },
     state: {
-        seller: {},
+        seller: {
+            id: (() => {
+                let queryParam = urlParse()
+                return queryParam.id
+            })()
+        },
         goods: [],
         ratings: [],
         selectFoods: [],
@@ -37,7 +43,7 @@ const store = new Vuex.Store({
     },
     mutations: {
         loadSeller(state, payload) {
-            state.seller = payload.seller
+            state.seller = Object.assign({}, state.seller, payload.seller)
         },
         loadGoods(state, payload) {
             state.goods = payload.goods
@@ -79,8 +85,8 @@ const store = new Vuex.Store({
         },
     },
     actions: {
-        getSeller({ commit }) {
-            const req = fetchDate('seller')
+        getSeller({ state, commit }) {
+            const req = fetchDate('seller?id=' + state.seller.id)
             req.then(resp => {
                 resp = resp.data
                 if (resp.errno === ERR_OK) {

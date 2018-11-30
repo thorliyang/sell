@@ -66,7 +66,7 @@ import BScroll from 'better-scroll'
 import cartcontrol from '../reuse/cartcontrol/cartcontrol'
 import split from '../reuse/split/split'
 import ratingselect from '../ratingselect/ratingselect'
-import { formatDate } from '../../common/js/data.js'
+import formatDate from '../../common/js/data.js'
 
 const POSITIVE = 0
 const NEGATIVE = 1
